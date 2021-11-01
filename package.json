@@ -1,5 +1,5 @@
 {
-  "name": "helium",
+  "name": "helium-calculator",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
