@@ -1,3 +1,9 @@
+// @ts-nocheck
+// disable typescript checking for development
+
+
+
+import { rejects } from 'assert';
 import moment, { Moment } from 'moment'
 
 // taken from https://github.com/jstnryan/helium-reward-log/blob/master/js/index.js
@@ -15,10 +21,10 @@ let openConnections = 0;
 let errors:Array<any> = []
 let retryCount = 3
 
-let rewards = [];
+let rewards:Array<Object> = [];
 let gateways = {};
 let prices = {};
-let processed = [];
+let processed:Array<Array<string>> = [];
 export let processedObjects:Array<RewardEntry> = [];
 
 export function apiRequest(url:string, callback:(...params:any) => void) {
@@ -80,6 +86,7 @@ function logging(...params:any) {
 
 function setRewards(response, url) {
     response = JSON.parse(response);
+    console.log(response)
     console.log("got response", response)
     if (response.hasOwnProperty('data')) {
         for (let d = 0; d < response.data.length; d++) {

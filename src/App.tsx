@@ -44,7 +44,7 @@ function App() {
         rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
       />
-      <Container maxWidth="m">
+      <Container>
       <LocalizationProvider dateAdapter={DateAdapter} >
       <Box
         my={2}
