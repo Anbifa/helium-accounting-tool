@@ -44,3 +44,23 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+# Prerequisites
+
+# Running
+
+```yarn start```
+
+# Future Feature request list
+- Make the values filled in by parameters of the url: React router v5 has a useParams hook for such purposes
+- Add time selector with location
+- Advanced features
+    - Split into shares
+    - Change to fiat money
+- Analytics of the earnings
+    - Graph view over time
+    - Split over different hotspots
+    - Split over different types of earnings
+- Download to an excel spreadsheet
+- 
+    

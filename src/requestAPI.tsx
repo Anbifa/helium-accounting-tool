@@ -2,7 +2,6 @@
 // disable typescript checking for development
 
 
-
 import { rejects } from 'assert';
 import moment, { Moment } from 'moment'
 
@@ -12,9 +11,24 @@ export type RewardEntry = {
     timestamp: string,
     minerHash: string,
     minerName: string,
-    block: string,
+    block: number,
     amount: number,
-    id: string,
+    id: number,
+}
+
+
+export type ServerDataResponse = {
+    account: string,
+    amount: number,
+    block: number,
+    gateway: string,
+    hash: string,
+    timestamp: string,
+}
+
+export type ServerResponse = {
+    data: Array<ServerDataResponse>,
+    cursor?: string
 }
 
 let openConnections = 0;
@@ -57,31 +71,85 @@ export function apiRequest(url:string, callback:(...params:any) => void) {
     xhr.send();
 }
 
-export function getOwnerRewards(ownerAddress:string, startTime:Moment, endTime:Moment) {
+export function promiseApiRequest(url:string):Promise<ServerResponse> {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    resolve(JSON.parse(xhr.responseText))
+                } else {
+                    reject('server rejected request')
+                }
+            }
+        }
+        xhr.open("GET", url);
+        xhr.send();
+    })
+}
+
+export function promiseIterableApiRequest(url:string, stackingData:Array<ServerDataResponse>):Promise<Array<ServerDataResponse>> {
+    console.log('calling iterable request')
+    return promiseApiRequest(url).then((response) => {
+        const newData = stackingData;
+        if(response.hasOwnProperty('data')){
+            console.log('adding more entries', stackingData.length, response.data.length)
+            newData.push(...response.data)
+        }
+        if (response.hasOwnProperty('cursor')) {
+                const newUrl = url.slice(0, url.indexOf('&cursor=')) + '&cursor=' + response.cursor
+                // loop over cursors
+                return promiseIterableApiRequest(newUrl, newData)
+            } else {
+                // exit condition
+                return newData
+            }
+
+        })
+}
+
+// iterable promises source: https://cmichel.io/dynamically-chaining-promises
+export function promiseAllApiRequest(initialUrl:string):Promise<Array<ServerDataResponse>> {
+    return new Promise((resolve, reject) => {
+        promiseApiRequest(initialUrl).then((response) => {
+            if (response.hasOwnProperty('cursor')) {
+                const newUrl = initialUrl.slice(0, initialUrl.indexOf('&cursor=')) + '&cursor=' + response.cursor
+                // loop over cursors
+                resolve(promiseIterableApiRequest(newUrl, response.data))
+            } else {
+                // end conditionf
+                resolve(response)
+            }
+
+        })
+    })
+}
+
+
+export function getOwnerRewards(ownerAddress:string, startTime:Moment, endTime:Moment):Promise<Array<RewardEntry>> {
     // error within the api requiring a negative UTC offset
     const formatedStartTime = startTime.utcOffset(-60).format('YYYY-MM-DDTHH:mm:ssZ')
     const formatedEndTime = endTime.utcOffset(-60).format('YYYY-MM-DDTHH:mm:ssZ')
-    console.log("getting rewards for", ownerAddress, formatedStartTime, formatedEndTime)    
+    // console.log("getting rewards for", ownerAddress, formatedStartTime, formatedEndTime)    
 
     let url = 'https://api.helium.io/v1/accounts/' + ownerAddress + '/rewards?max_time=' + formatedEndTime + '&min_time=' + formatedStartTime;
-    console.log("url", url)
-    apiRequest(url, setRewards);
+
+    return promiseAllApiRequest(url).then((data) => {
+        return processDataAsync(data)
+    })
 }
 
-export function getHotspotsRewards(hotspotAddress:string, startTime:Moment, endTime:Moment) {
+export function getHotspotsRewards(hotspotAddress:string, startTime:Moment, endTime:Moment):Promise<Array<RewardEntry>> {
     // error within the api requiring a negative UTC offset
     const formatedStartTime = startTime.utcOffset(-60).format('YYYY-MM-DDTHH:mm:ssZ')
     const formatedEndTime = endTime.utcOffset(-60).format('YYYY-MM-DDTHH:mm:ssZ')
-    console.log("getting rewards for", hotspotAddress, formatedStartTime, formatedEndTime)    
+    // console.log("getting rewards for", hotspotAddress, formatedStartTime, formatedEndTime)    
 
     let url = 'https://api.helium.io/v1/hotspots/' + hotspotAddress + '/rewards?max_time=' + formatedEndTime + '&min_time=' + formatedStartTime;
-    console.log("url", url)
-    apiRequest(url, setRewards);
-}
-
-function logging(...params:any) {
-    console.log(params)
     
+    return promiseAllApiRequest(url).then((data) => {
+        return processDataAsync(data)
+    })
 }
 
 function setRewards(response, url) {
@@ -151,4 +219,20 @@ function processData() {
         processedObjects.push(rObj)
     }
     console.log(processed)
+}
+
+function processDataAsync(rawRewardArray:Array<ServerDataResponse>):Array<RewardEntry> {
+    return rawRewardArray.map((item, index) => {
+        let amount = item.amount / 100000000; // "bones" per HNT
+        let rObj:RewardEntry = {
+            timestamp: item.timestamp,
+            minerHash: item.gateway,
+            // minerName: gateways[item.gateway],
+            minerName: "to be pulled",
+            block: item.block,
+            amount: amount,
+            id: item.block,
+        }
+        return rObj
+    })
 }

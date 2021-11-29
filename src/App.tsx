@@ -137,23 +137,18 @@ function App() {
           console.log("clicked button")
           if(startDate !== null && endDate !== null){
             if(source === "hotspot"){
-              getHotspotsRewards(hotspotAddress, startDate, endDate)
+              getHotspotsRewards(hotspotAddress, startDate, endDate).then((data) => {
+                onChangeRows(data)
+              })
             } else if(source === "owner"){
-              getOwnerRewards(ownerAddress, startDate, endDate)
+              getOwnerRewards(ownerAddress, startDate, endDate).then((data) => {
+                onChangeRows(data)
+              })
             }
           }
         }}
         disabled={startDate === null || endDate === null}
         >Fetch rewards</Button>
-
-      <Button
-        variant="contained"
-        size={'large'}
-        onClick={(event) => {
-          console.log(processedObjects.length)
-          onChangeRows(processedObjects)
-        }}
-        >Display rewards</Button>
       </Box>
 
       <DataGrid rows={rows} columns={columns} />
