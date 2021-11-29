@@ -32,6 +32,7 @@ function App() {
   const [ownerAddress, onChangeOwnerAddress] = React.useState<string>('');
   const [startDate, onChangeStartDate] = React.useState<Moment | null>(null);
   const [endDate, onChangeEndDate] = React.useState<Moment | null>(null);
+  const [pullingData, onChangePullingData] = React.useState<boolean>(false);
   const [rows, onChangeRows] = React.useState<Array<RewardEntry>>([])
   const [source, onChangeSource] = React.useState<string>('hotspot')
 
@@ -137,18 +138,26 @@ function App() {
           console.log("clicked button")
           if(startDate !== null && endDate !== null){
             if(source === "hotspot"){
+              onChangePullingData(true)
+              onChangeRows([])
               getHotspotsRewards(hotspotAddress, startDate, endDate).then((data) => {
                 onChangeRows(data)
+              }).finally(() => {
+                onChangePullingData(false)
               })
             } else if(source === "owner"){
+              onChangePullingData(true)
+              onChangeRows([])
               getOwnerRewards(ownerAddress, startDate, endDate).then((data) => {
                 onChangeRows(data)
+              }).finally(() => {
+                onChangePullingData(false)
               })
             }
           }
         }}
         disabled={startDate === null || endDate === null}
-        >Fetch rewards</Button>
+        >{pullingData ? 'Pulling data' :  "Fetch rewards"}</Button>
       </Box>
 
       <DataGrid rows={rows} columns={columns} />
