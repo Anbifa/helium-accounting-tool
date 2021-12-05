@@ -12,7 +12,7 @@ import { DatePicker } from '@mui/lab';
 import './App.css';
 import { getOwnerRewards, getHotspotsRewards } from './requestAPI';
 import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid';
-import { RewardEntry, processedObjects } from './requestAPI';
+import { RewardEntry } from './requestAPI';
 
 const columns: GridColDef[] = [
   { field: 'timestamp', headerName: 'Time stamp', width: 150 },

@@ -1,8 +1,6 @@
 // @ts-nocheck
 // disable typescript checking for development
 
-
-import { rejects } from 'assert';
 import moment, { Moment } from 'moment'
 
 // taken from https://github.com/jstnryan/helium-reward-log/blob/master/js/index.js
@@ -16,8 +14,7 @@ export type RewardEntry = {
     id: number,
 }
 
-
-export type ServerDataResponse = {
+export type ServerRewardResponse = {
     account: string,
     amount: number,
     block: number,
@@ -26,49 +23,49 @@ export type ServerDataResponse = {
     timestamp: string,
 }
 
-export type ServerResponse = {
-    data: Array<ServerDataResponse>,
-    cursor?: string
+export type ServerMinerResponse = {
+    address: string,
+    name: string,
+    block: number,
+    block_added: number,
+    elevation: number,
+    gain: number,
+    geocode: {
+        city_id: string
+        long_city: string
+        long_country: string,
+        long_state: string,
+        long_street: string,
+        short_city: string
+        short_country: string,
+        short_state: string,
+        short_street: string,
+    }
+    last_change_block: number,
+    last_poc_challenge: number,
+    lat: number,
+    lng: number,
+    location: string,
+    location_hex: string,
+    mode: string,
+    nonce: number,
+    owner: string,
+    payer: string,
+    reward_scale: number,
+    speculative_nonce: number,
+    status: {
+        timestamp: string,
+        online: string,
+        listen_addrs: Array<string>,
+        height: number
+    }
+    timestamp_added: string
 }
 
-let openConnections = 0;
-let errors:Array<any> = []
-let retryCount = 3
-
-let rewards:Array<Object> = [];
-let gateways = {};
-let prices = {};
-let processed:Array<Array<string>> = [];
-export let processedObjects:Array<RewardEntry> = [];
-
-export function apiRequest(url:string, callback:(...params:any) => void) {
-    const xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200) {
-                --openConnections;
-                callback(xhr.responseText, url);
-            } else {
-                openConnections = -1;
-                if (errors.hasOwnProperty(url) && errors[url] >= retryCount) {
-                    alert('There was a error while fetching reward info.');
-                    // document.getElementById('button-download').disabled = true;
-                    // document.getElementById('status-area').classList.add('u-hidden');
-                    // document.getElementById('button-generate').disabled = false;
-                } else {
-                    if (errors.hasOwnProperty(url)) {
-                        ++errors[url];
-                    } else {
-                        errors[url] = 1;
-                    }
-                    apiRequest(url, callback);
-                }
-            }
-        }
-    }
-    ++openConnections;
-    xhr.open("GET", url);
-    xhr.send();
+export type ServerResponse = {
+    data: Array<ServerRewardResponse>,
+    // data: Array<ServerRewardResponse> | Array<ServerMinerResponse>,
+    cursor?: string
 }
 
 export function promiseApiRequest(url:string):Promise<ServerResponse> {
@@ -88,7 +85,7 @@ export function promiseApiRequest(url:string):Promise<ServerResponse> {
     })
 }
 
-export function promiseIterableApiRequest(url:string, stackingData:Array<ServerDataResponse>):Promise<Array<ServerDataResponse>> {
+export function iterableApiRequest(url:string, stackingData:Array<ServerRewardResponse>):Promise<Array<ServerRewardResponse>> {
     console.log('calling iterable request')
     return promiseApiRequest(url).then((response) => {
         const newData = stackingData;
@@ -99,7 +96,7 @@ export function promiseIterableApiRequest(url:string, stackingData:Array<ServerD
         if (response.hasOwnProperty('cursor')) {
                 const newUrl = url.slice(0, url.indexOf('&cursor=')) + '&cursor=' + response.cursor
                 // loop over cursors
-                return promiseIterableApiRequest(newUrl, newData)
+                return iterableApiRequest(newUrl, newData)
             } else {
                 // exit condition
                 return newData
@@ -109,16 +106,16 @@ export function promiseIterableApiRequest(url:string, stackingData:Array<ServerD
 }
 
 // iterable promises source: https://cmichel.io/dynamically-chaining-promises
-export function promiseAllApiRequest(initialUrl:string):Promise<Array<ServerDataResponse>> {
+export function initialApiRequest(initialUrl:string):Promise<Array<ServerRewardResponse>> {
     return new Promise((resolve, reject) => {
         promiseApiRequest(initialUrl).then((response) => {
             if (response.hasOwnProperty('cursor')) {
                 const newUrl = initialUrl.slice(0, initialUrl.indexOf('&cursor=')) + '&cursor=' + response.cursor
                 // loop over cursors
-                resolve(promiseIterableApiRequest(newUrl, response.data))
+                resolve(iterableApiRequest(newUrl, response.data))
             } else {
-                // end conditionf
-                resolve(response)
+                // end condition
+                resolve(response.data)
             }
 
         })
@@ -134,8 +131,10 @@ export function getOwnerRewards(ownerAddress:string, startTime:Moment, endTime:M
 
     let url = 'https://api.helium.io/v1/accounts/' + ownerAddress + '/rewards?max_time=' + formatedEndTime + '&min_time=' + formatedStartTime;
 
-    return promiseAllApiRequest(url).then((data) => {
-        return processDataAsync(data)
+    return initialApiRequest(url).then((data) => {
+        return processDataAsync(data).then((d) => {
+            return d
+        })
     })
 }
 
@@ -147,92 +146,48 @@ export function getHotspotsRewards(hotspotAddress:string, startTime:Moment, endT
 
     let url = 'https://api.helium.io/v1/hotspots/' + hotspotAddress + '/rewards?max_time=' + formatedEndTime + '&min_time=' + formatedStartTime;
     
-    return promiseAllApiRequest(url).then((data) => {
-        return processDataAsync(data)
+    return initialApiRequest(url).then((data) => {
+        return processDataAsync(data).then((d) => {
+            return d
+        })
     })
 }
 
-function setRewards(response, url) {
-    response = JSON.parse(response);
-    console.log(response)
-    console.log("got response", response)
-    if (response.hasOwnProperty('data')) {
-        for (let d = 0; d < response.data.length; d++) {
-            rewards.push(response.data[d]);
-            if (!gateways.hasOwnProperty(response.data[d].gateway)) {
-                gateways[response.data[d].gateway] = 'unknown';
-                getGateway(response.data[d].gateway);
+function  getGateways(uniqueGatewayHashes:Array<string>):Promise<Map<string, string>> {
+    let returnValue:Map<string, string> = new Map()
+    return Promise.all(
+            // request all hotspot names
+            uniqueGatewayHashes.map((v, i, a) => {
+                return initialApiRequest('https://api.helium.io/v1/hotspots/' + v)
+            })
+        ).then((values) => {
+            console.log(values)
+            // create map of hotspot hash & name
+            values.forEach((v, i, a) => {
+                returnValue.set(v.address, v.name.replace(/-/g, ' '))
+            })
+        }).then(() => {
+            return returnValue
+        })
+}
+
+function processDataAsync(rawRewardArray:Array<ServerRewardResponse>):Promise<Array<RewardEntry>> {
+    const uniqueGatewayHashes:Array<string> = [...rawRewardArray.reduce((a,c)=>{
+        a.set(c.gateway, c.gateway);
+        return a;
+    }, new Map()).values()]
+    return getGateways(uniqueGatewayHashes).then((gatewayLookup) => {
+        return rawRewardArray.map((item, index) => {
+            let amount = item.amount / 100000000; // "bones" per HNT
+            let rObj:RewardEntry = {
+                timestamp: item.timestamp,
+                minerHash: item.gateway,
+                minerName: gatewayLookup.get(item.gateway),
+                block: item.block,
+                amount: amount,
+                id: item.block,
             }
-        }
-    }
-    if (response.hasOwnProperty('cursor')) {
-        apiRequest(
-            url.slice(0, url.indexOf('&cursor=')) + '&cursor=' + response.cursor,
-            setRewards
-        );
-    } else {
-        processData();
-    }
-}
-
-function getGateway(hash:string) {
-    apiRequest('https://api.helium.io/v1/hotspots/' + hash, setGateway);
-}
-
-function setGateway(response:string) {
-    response = JSON.parse(response);
-    gateways[response.data.address] = response.data.name;
-}
-
-
-function processData() {
-    if (openConnections > 0) {
-        // wait for API calls to finish before processing data
-        setTimeout(function() { processData(); }, 1000);
-        return;
-    } else if (openConnections < 0) {
-        return;
-    }
-    console.log("processing data", JSON.stringify(gateways), rewards)
-
-    for (let r = 0; r < rewards.length; r++) {
-        let amount = rewards[r].amount / 100000000; // "bones" per HNT
- 
-
-        let rArr = [
-            rewards[r].timestamp,                          // timestamp
-            gateways[rewards[r].gateway],                  // device
-            rewards[r].block,                              // block
-            amount,                                        // reward
-        ];
-        processed.push(rArr);
-        console.log(rArr)
-
-        let rObj:RewardEntry = {
-            timestamp: rewards[r].timestamp,
-            minerHash: rewards[r].gateway,
-            minerName: gateways[rewards[r].gateway],
-            block: rewards[r].block,
-            amount: amount,
-            id: rewards[r].block,
-        }
-        processedObjects.push(rObj)
-    }
-    console.log(processed)
-}
-
-function processDataAsync(rawRewardArray:Array<ServerDataResponse>):Array<RewardEntry> {
-    return rawRewardArray.map((item, index) => {
-        let amount = item.amount / 100000000; // "bones" per HNT
-        let rObj:RewardEntry = {
-            timestamp: item.timestamp,
-            minerHash: item.gateway,
-            // minerName: gateways[item.gateway],
-            minerName: "to be pulled",
-            block: item.block,
-            amount: amount,
-            id: item.block,
-        }
-        return rObj
+            return rObj
+        })
     })
 }
