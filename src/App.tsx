@@ -4,14 +4,14 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
-import { Button, TextField, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Button, TextField, ToggleButton, ToggleButtonGroup, Fab } from '@mui/material';
 import DateAdapter from '@mui/lab/AdapterMoment';
 import moment, { Moment } from 'moment'
 import { LocalizationProvider } from '@mui/lab';
-import { DatePicker } from '@mui/lab';
+import { DateTimePicker } from '@mui/lab';
 import './App.css';
 import { getOwnerRewards, getHotspotsRewards } from './requestAPI';
-import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridRowsProp, GridColDef, GridToolbarExport, GridToolbarContainer } from '@mui/x-data-grid';
 import { RewardEntry } from './requestAPI';
 
 const columns: GridColDef[] = [
@@ -37,6 +37,23 @@ function App() {
   const [source, onChangeSource] = React.useState<string>('hotspot')
 
 
+  function CustomToolbar() {
+    return (
+      <GridToolbarContainer style={{
+        justifyContent: 'center',
+        display: rows.length > 0  ? 'block' : 'none',
+        }}>
+        <GridToolbarExport
+          csvOptions={{
+            allColumns: true,
+          }}
+          printOptions={{
+            disableToolbarButton: true
+          }}
+        />
+      </GridToolbarContainer>
+    );
+  }
 
 
   return (
@@ -45,7 +62,7 @@ function App() {
         rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
       />
-      <Container>
+      <Container sx={{height: "70vh", marginBottom: 50} }>
       <LocalizationProvider dateAdapter={DateAdapter} >
       <Box
         my={2}
@@ -105,24 +122,27 @@ function App() {
           />}
       </Box>
       <Box my={2}>
-        <DatePicker
+        <DateTimePicker
           label="Start Date"
           value={startDate}
-          inputFormat={"YYYY/MM/DD"}
+          // inputFormat={"YYYY/MM/DD hh:mm"}
           onChange={(newValue) => {
             if(newValue !== null) onChangeStartDate(newValue);
           }}
-          renderInput={(params) => <TextField {...params} />}
+          renderInput={(params) => <TextField {...params} style={{width: 500}} />}
           />
-        <DatePicker
+      </Box>
+      <Box my={2}>
+        <DateTimePicker
           label="End Date"
           value={endDate}
-          inputFormat={"YYYY/MM/DD"}
+          minDate={startDate}
+          // inputFormat={"YYYY/MM/DD hh:mm"}
           clearable={true}
           onChange={(newValue) => {
             if(newValue !== null) onChangeEndDate(newValue);
           }}
-          renderInput={(params) => <TextField {...params} />}
+          renderInput={(params) => <TextField {...params} style={{width: 500}}  />}
           />
       </Box>
 
@@ -160,9 +180,26 @@ function App() {
         >{pullingData ? 'Pulling data' :  "Fetch rewards"}</Button>
       </Box>
 
-      <DataGrid rows={rows} columns={columns} />
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        style={{maxHeight: "100vh", marginBottom: 16,}}
+        components={{
+          Toolbar: CustomToolbar,
+        }}
+      />
 
-      
+      {/* 
+      // Additional download only available on the MUI pro (paid) license
+      <Fab
+        variant="extended"
+        size={'large'}
+        onClick={(event) => {}}
+        sx={{marginBottom: 2}}
+        disabled={rows.length === 0}
+      >
+        Download data
+      </Fab> */}
       
       
       </LocalizationProvider>
