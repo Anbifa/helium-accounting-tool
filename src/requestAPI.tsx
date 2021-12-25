@@ -124,9 +124,9 @@ export function initialApiRequest(initialUrl:string):Promise<Array<ServerRewardR
 
 
 export function getOwnerRewards(ownerAddress:string, startTime:Moment, endTime:Moment):Promise<Array<RewardEntry>> {
-    // error within the api requiring a negative UTC offset
-    const formatedStartTime = startTime.utcOffset(-60).format('YYYY-MM-DDTHH:mm:ssZ')
-    const formatedEndTime = endTime.utcOffset(-60).format('YYYY-MM-DDTHH:mm:ssZ')
+    // error within the api requiring a negative UTC offset => no offset
+    const formatedStartTime = startTime.toISOString(false)
+    const formatedEndTime = endTime.toISOString(false)
     // console.log("getting rewards for", ownerAddress, formatedStartTime, formatedEndTime)    
 
     let url = 'https://api.helium.io/v1/accounts/' + ownerAddress + '/rewards?max_time=' + formatedEndTime + '&min_time=' + formatedStartTime;
@@ -139,10 +139,11 @@ export function getOwnerRewards(ownerAddress:string, startTime:Moment, endTime:M
 }
 
 export function getHotspotsRewards(hotspotAddress:string, startTime:Moment, endTime:Moment):Promise<Array<RewardEntry>> {
-    // error within the api requiring a negative UTC offset
-    const formatedStartTime = startTime.utcOffset(-60).format('YYYY-MM-DDTHH:mm:ssZ')
-    const formatedEndTime = endTime.utcOffset(-60).format('YYYY-MM-DDTHH:mm:ssZ')
-    // console.log("getting rewards for", hotspotAddress, formatedStartTime, formatedEndTime)    
+    // error within the api requiring a negative UTC offset => no offset
+    const formatedStartTime = startTime.toISOString(false)
+    const formatedEndTime = endTime.toISOString(false)
+    console.log("getting rewards for", hotspotAddress, formatedStartTime, formatedEndTime)    
+
 
     let url = 'https://api.helium.io/v1/hotspots/' + hotspotAddress + '/rewards?max_time=' + formatedEndTime + '&min_time=' + formatedStartTime;
     

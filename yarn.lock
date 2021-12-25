@@ -1191,6 +1191,13 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@babel/runtime@^7.7.6":
+  version "7.16.5"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.16.5.tgz#7f3e34bf8bdbbadf03fbb7b1ea0d929569c9487a"
+  integrity sha512-TXWihFIS3Pyv5hzR7j6ihmeLkZfrXGxAr5UfSl8CHf+6q/wpiYDkUau0czckpYG8QmnCIuPpdLtuA9VmuGGyMA==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
 "@babel/template@^7.10.4", "@babel/template@^7.12.13", "@babel/template@^7.3.3":
   version "7.12.13"
   resolved "https://registry.npmjs.org/@babel/template/-/template-7.12.13.tgz"
@@ -1676,10 +1683,10 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
-"@mui/base@5.0.0-alpha.59":
-  version "5.0.0-alpha.59"
-  resolved "https://registry.yarnpkg.com/@mui/base/-/base-5.0.0-alpha.59.tgz#ca14f4597b30a342e5ec622a7164304478acd601"
-  integrity sha512-rPgN2FW0FAjQ9+LQ+XBsq3DFcuiiMFhf8uoLJAWnnzft27IJvJqbrhfpCZ68G6l+umJLbbl5RIIbpt8ALZDDNQ==
+"@mui/base@5.0.0-alpha.61":
+  version "5.0.0-alpha.61"
+  resolved "https://registry.yarnpkg.com/@mui/base/-/base-5.0.0-alpha.61.tgz#8b2a57aa87ca857a57ea6051ec924b0dbf03435d"
+  integrity sha512-xB2EksQsLYOwmBQRDdcJjKAflgBYE9KBZS/TBxIKBlfi4w1v7kCi5VCHTHIQgPSjgoTSt3hyI+yHO2fLvCbUWQ==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@emotion/is-prop-valid" "^1.1.1"
@@ -1721,14 +1728,14 @@
     react-transition-group "^4.4.2"
     rifm "^0.12.0"
 
-"@mui/material@^5.0.6":
-  version "5.2.3"
-  resolved "https://registry.yarnpkg.com/@mui/material/-/material-5.2.3.tgz#949c32ff2d6cc64c9ec21889ddf89be76f10ef5f"
-  integrity sha512-qhHAVpkQh77xiic38TIDMrKGafRRy9WT16uvexvE2UdyI259YP4HvFamYz3prSNnZi5UozwKpH/QGnv6+JT7/g==
+"@mui/material@^5.2.0":
+  version "5.2.5"
+  resolved "https://registry.yarnpkg.com/@mui/material/-/material-5.2.5.tgz#0e3fb756964798d261cf3473a25e50bd0ae669cb"
+  integrity sha512-I0A5IgZlJVyVe9PUrXXuknAbdgij2wVynC2/iyBvoMwc79PoksUZTY4qKPfoy0gDyMRlexRGxZ68XpX5pleMgQ==
   dependencies:
     "@babel/runtime" "^7.16.3"
-    "@mui/base" "5.0.0-alpha.59"
-    "@mui/system" "^5.2.3"
+    "@mui/base" "5.0.0-alpha.61"
+    "@mui/system" "^5.2.5"
     "@mui/types" "^7.1.0"
     "@mui/utils" "^5.2.3"
     "@types/react-transition-group" "^4.4.4"
@@ -1748,14 +1755,14 @@
     "@mui/utils" "^5.2.3"
     prop-types "^15.7.2"
 
-"@mui/styled-engine@^5.2.0", "@mui/styled-engine@npm:@mui/styled-engine-sc@latest":
+"@mui/styled-engine@^5.2.0", "@mui/styled-engine@^5.2.5", "@mui/styled-engine@npm:@mui/styled-engine-sc@latest":
   version "5.0.4"
   resolved "https://registry.npmjs.org/@mui/styled-engine-sc/-/styled-engine-sc-5.0.4.tgz"
   integrity sha512-xyn/hWdGLmEdW4xZu8pn0WYuMx4SZ5+OSaU3VMwHY9ToCHFubScyy0QW71ERsAHwmE/TomMEh+8wBDC59VjAHA==
   dependencies:
     prop-types "^15.7.2"
 
-"@mui/system@^5.0.6", "@mui/system@^5.2.3":
+"@mui/system@^5.0.6":
   version "5.2.3"
   resolved "https://registry.yarnpkg.com/@mui/system/-/system-5.2.3.tgz#70584e6d5cf2b02963a6d0d90d64f7a9ad614803"
   integrity sha512-YvkjmqgOruZgr+IkueRns99gl3MmnNs8BhnlZosYMLzKz/1lY0JqVBFqUh4sGVbD0UEKFwdk8H31itG5OIPChA==
@@ -1769,12 +1776,26 @@
     csstype "^3.0.10"
     prop-types "^15.7.2"
 
+"@mui/system@^5.2.5":
+  version "5.2.5"
+  resolved "https://registry.yarnpkg.com/@mui/system/-/system-5.2.5.tgz#d6ebbe4dc1751e4e29a17bbe4168b1f336618586"
+  integrity sha512-UHKsEZCZa0wuR9w8EXRmDVolHjjFBWinMhSmaRuR6nbmxVMUq7AhF5N0+Aw4IhFSehwfpVpf8FOlZDfg9QnGBA==
+  dependencies:
+    "@babel/runtime" "^7.16.3"
+    "@mui/private-theming" "^5.2.3"
+    "@mui/styled-engine" "^5.2.5"
+    "@mui/types" "^7.1.0"
+    "@mui/utils" "^5.2.3"
+    clsx "^1.1.1"
+    csstype "^3.0.10"
+    prop-types "^15.7.2"
+
 "@mui/types@^7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@mui/types/-/types-7.1.0.tgz#5ed928c5a41cfbf9a4be82ea3bbdc47bcc9610d5"
   integrity sha512-Hh7ALdq/GjfIwLvqH3XftuY3bcKhupktTm+S6qRIDGOtPtRuq2L21VWzOK4p7kblirK0XgGVH5BLwa6u8z/6QQ==
 
-"@mui/utils@^5.0.1", "@mui/utils@^5.2.2", "@mui/utils@^5.2.3":
+"@mui/utils@^5.0.1", "@mui/utils@^5.2.3":
   version "5.2.3"
   resolved "https://registry.yarnpkg.com/@mui/utils/-/utils-5.2.3.tgz#994f3a500679804483732596fcfa531e59c56445"
   integrity sha512-sQujlajIS0zQKcGIS6tZR0L1R+ib26B6UtuEn+cZqwKHsPo3feuS+SkdscYBdcCdMbrZs4gj8WIJHl2z6tbSzQ==
@@ -1785,12 +1806,12 @@
     prop-types "^15.7.2"
     react-is "^17.0.2"
 
-"@mui/x-data-grid@^5.0.0-beta.6":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@mui/x-data-grid/-/x-data-grid-5.2.0.tgz#1ffaffee9b7189532d8f1338680b4be6762e84aa"
-  integrity sha512-Hen9hItbmggxt1TPxUfu6khz9BJA8iOf1H4A4/j62EPH/4DKgyxZD3TgdpbNmo4JY7dIIwdq2XNzMwqqgZtlaA==
+"@mui/x-data-grid@^5.2.0":
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/@mui/x-data-grid/-/x-data-grid-5.2.1.tgz#5c60e62e35d01507c9ec3b670d20a1cd408d312a"
+  integrity sha512-d1kNZnISZy74uz9mDitSRqdOPLTyqPXue/BQJV42evZ2aGbEIo5WhrGrQUhz/wgfigGaeybphWo8b8+efnVjGw==
   dependencies:
-    "@mui/utils" "^5.2.2"
+    "@mui/utils" "^5.2.3"
     clsx "^1.1.1"
     prop-types "^15.7.2"
     reselect "^4.1.5"
@@ -5952,6 +5973,13 @@ hex-color-regex@^1.1.0:
   resolved "https://registry.npmjs.org/hex-color-regex/-/hex-color-regex-1.1.0.tgz"
   integrity sha512-l9sfDFsuqtOqKDsQdqrMRk0U85RZc0RtOR9yPI7mRVOa4FsR/BVnZ0shmQRM96Ji99kYZP/7hn1cedc1+ApsTQ==
 
+history@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/history/-/history-5.2.0.tgz#7cdd31cf9bac3c5d31f09c231c9928fad0007b7c"
+  integrity sha512-uPSF6lAJb3nSePJ43hN3eKj1dTWpN9gMod0ZssbFTIsen+WehTmEadgL+kg78xLJFdRfrrC//SavDzmRVdE+Ig==
+  dependencies:
+    "@babel/runtime" "^7.7.6"
+
 hmac-drbg@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/hmac-drbg/-/hmac-drbg-1.0.1.tgz"
@@ -9573,6 +9601,21 @@ react-refresh@^0.8.3:
   version "0.8.3"
   resolved "https://registry.npmjs.org/react-refresh/-/react-refresh-0.8.3.tgz"
   integrity sha512-X8jZHc7nCMjaCqoU+V2I0cOhNW+QMBwSUkeXnTi8IPe6zaRWfn60ZzvFDZqWPfmSJfjub7dDW1SP0jaHWLu/hg==
+
+react-router-dom@^6.2.1:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-6.2.1.tgz#32ec81829152fbb8a7b045bf593a22eadf019bec"
+  integrity sha512-I6Zax+/TH/cZMDpj3/4Fl2eaNdcvoxxHoH1tYOREsQ22OKDYofGebrNm6CTPUcvLvZm63NL/vzCYdjf9CUhqmA==
+  dependencies:
+    history "^5.2.0"
+    react-router "6.2.1"
+
+react-router@6.2.1, react-router@^6.2.1:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/react-router/-/react-router-6.2.1.tgz#be2a97a6006ce1d9123c28934e604faef51448a3"
+  integrity sha512-2fG0udBtxou9lXtK97eJeET2ki5//UWfQSl1rlJ7quwe6jrktK9FCCc8dQb5QY6jAv3jua8bBQRhhDOM/kVRsg==
+  dependencies:
+    history "^5.2.0"
 
 react-scripts@4.0.3:
   version "4.0.3"

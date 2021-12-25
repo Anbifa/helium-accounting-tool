@@ -13,6 +13,7 @@ import './App.css';
 import { getOwnerRewards, getHotspotsRewards } from './requestAPI';
 import { DataGrid, GridRowsProp, GridColDef, GridToolbarExport, GridToolbarContainer } from '@mui/x-data-grid';
 import { RewardEntry } from './requestAPI';
+import { useSearchParams } from 'react-router-dom'
 
 const columns: GridColDef[] = [
   { field: 'timestamp', headerName: 'Time stamp (UTC)', width: 150 },
@@ -35,6 +36,31 @@ function App() {
   const [pullingData, onChangePullingData] = React.useState<boolean>(false);
   const [rows, onChangeRows] = React.useState<Array<RewardEntry>>([])
   const [source, onChangeSource] = React.useState<string>('hotspot')
+  const [searchParams] = useSearchParams()
+
+  React.useEffect(()=>{
+    const hs = searchParams.get("hs")
+    if(hs !== null) onChangeHotspotAddress(hs)
+
+    const ow = searchParams.get("ow")
+    if(ow !== null) onChangeOwnerAddress(ow)
+
+    // change to owner mode if owner hash was present but no hotspot
+    if(hs === null && ow !== null) onChangeSource("owner")
+
+    const start = searchParams.get("start")
+    if(start !== null){
+      let possibleStartDate = moment.utc(start, 'YYYYMMDDTHH:mm:ss')
+      if( possibleStartDate.isValid() ) onChangeStartDate(possibleStartDate)
+    }
+
+    const end = searchParams.get("end")
+    if(end !== null){
+      const possibleEndDate = moment.utc(end, 'YYYYMMDDTHH:mm:ss')
+      if( possibleEndDate.isValid() ) onChangeEndDate(possibleEndDate)
+    }
+
+  }, [searchParams])
 
 
   function CustomToolbar() {
@@ -126,10 +152,11 @@ function App() {
       </Box>
       <Box my={2}>
         <DateTimePicker
-          label="Start Date"
+          label="Start Date (UTC)"
           value={startDate}
-          // inputFormat={"YYYY/MM/DD hh:mm"}
+          inputFormat={"YYYY/MM/DD HH:mm:ss"}
           onChange={(newValue) => {
+            console.log(newValue)
             if(newValue !== null) onChangeStartDate(newValue);
           }}
           renderInput={(params) => <TextField {...params} style={{width: 500}} />}
@@ -137,10 +164,10 @@ function App() {
       </Box>
       <Box my={2}>
         <DateTimePicker
-          label="End Date"
+          label="End Date (UTC)"
           value={endDate}
           minDate={startDate}
-          // inputFormat={"YYYY/MM/DD hh:mm"}
+          inputFormat={"YYYY/MM/DD HH:mm:ss"}
           clearable={true}
           onChange={(newValue) => {
             if(newValue !== null) onChangeEndDate(newValue);
