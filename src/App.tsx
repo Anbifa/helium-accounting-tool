@@ -15,7 +15,7 @@ import { DataGrid, GridRowsProp, GridColDef, GridToolbarExport, GridToolbarConta
 import { RewardEntry } from './requestAPI';
 
 const columns: GridColDef[] = [
-  { field: 'timestamp', headerName: 'Time stamp', width: 150 },
+  { field: 'timestamp', headerName: 'Time stamp (UTC)', width: 150 },
   { field: 'minerHash', headerName: 'Miner Hash', width: 150 },
   { field: 'minerName', headerName: 'Miner Name', width: 150 },
   { field: 'block', headerName: 'Block Number', width: 150 },
@@ -46,6 +46,9 @@ function App() {
         <GridToolbarExport
           csvOptions={{
             allColumns: true,
+            fileName:
+              startDate !== null && endDate !== null ? 'heliumExport_'+source+'_'+startDate.format("YYYYMMDD-HH mm")+'_'+endDate.format("YYYYMMDD-HHmm")+'.csv' :
+              'heliumExport.csv',
           }}
           printOptions={{
             disableToolbarButton: true
