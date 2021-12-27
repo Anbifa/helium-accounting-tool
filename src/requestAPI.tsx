@@ -186,7 +186,7 @@ function processDataAsync(rawRewardArray:Array<ServerRewardResponse>):Promise<Ar
                 minerName: gatewayLookup.get(item.gateway),
                 block: item.block,
                 amount: amount,
-                id: item.block,
+                id: index
             }
             return rObj
         })
