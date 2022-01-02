@@ -8,7 +8,7 @@ import reportWebVitals from './reportWebVitals';
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter
-      basename={`/${process.env.PUBLIC_URL}`}
+      basename={`/helium-accounting-tool`}
     >
       <Routes>
         <Route path="/" element={<App />}/>

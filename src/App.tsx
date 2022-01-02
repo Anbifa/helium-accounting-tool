@@ -97,7 +97,7 @@ function App() {
         my={2}
       >
         <Box
-          mb={1}
+          mb={4}
         >
           <ToggleButtonGroup
             value={source}
